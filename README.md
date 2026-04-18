@@ -8,12 +8,10 @@ It handles complex 3D cube transitions, gestures, network loading states, and is
 
 ## 📸 Demo
 
-*(Add your demo GIFs and screenshots here)*
+### [▶️ Click here to watch the Video Demo!](https://drive.google.com/file/d/10CYhIMnRuh9ZJIFlowcf9JrUXqQrR_QZ/view)
 
-<div style="display: flex; gap: 10px;">
-  <img src="https://via.placeholder.com/250x500.png?text=Story+Tray+Preview" alt="Story Tray Demo" width="200" />
-  <img src="https://via.placeholder.com/250x500.png?text=Story+Viewer+Preview" alt="Story Viewer Demo" width="200" />
-  <img src="https://via.placeholder.com/250x500.png?text=Custom+Header/Footer" alt="Customization Demo" width="200" />
+<div align="center">
+  <img src="https://drive.google.com/uc?export=view&id=1WqvTlQmDuW49mANXisAEU75_YcDuzl8r" alt="Story Viewer Demo" width="300" />
 </div>
 
 ---
