@@ -1,5 +1,5 @@
 {
-  "name": "@deeptech/react-native-stories",
+  "name": "deeptech-react-native-stories",
   "version": "1.0.0",
   "description": "A highly customizable, Instagram-like 3D cube story viewer for React Native and Expo.",
   "main": "lib/index.js",
