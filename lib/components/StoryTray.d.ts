@@ -1,0 +1,3 @@
+import React from 'react';
+import { StoryTrayProps } from '../types';
+export declare function StoryTray<U, S>({ users, viewedStoryIds, unviewedRingColors, viewedRingColor, avatarSize, trayBackgroundColor, defaultStoryDuration, showsReplyInput, showsOptionsIcon, showsLikeIcon, showsShareIcon, renderAvatar, getUserId, getUserAvatarUrl, getUserName, getUserStories, getStoryId, getStoryMediaUrl, getStoryMediaType, getStoryDuration, onReplySubmit, onLikePress, onSharePress, onOptionsPress, headerStyle, usernameStyle, timestampStyle, footerStyle, replyInputStyle, progressBarTrackStyle, progressBarFillStyle, onStoryOpen, onStoryView, onStoryClose, onAllStoriesViewed, }: StoryTrayProps<U, S>): React.JSX.Element;

@@ -76,7 +76,7 @@ export function AvatarRing<U, S>({
           />
         ) : (
           <LinearGradient
-            colors={unviewedColors}
+            colors={unviewedColors as [string, string, ...string[]]}
             start={{ x: 0.1, y: 0.9 }}
             end={{ x: 0.9, y: 0.1 }}
             style={{

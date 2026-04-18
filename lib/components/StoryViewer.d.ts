@@ -1,0 +1,3 @@
+import React from 'react';
+import { StoryViewerProps } from '../types';
+export declare function StoryViewer<U, S>({ users, initialUserId, visible, onClose, viewedStoryIds, onMarkViewed, onStoryOpen, onStoryView, onStoryClose, onAllStoriesViewed, getUserId, getUserAvatarUrl, getUserName, getUserStories, getStoryId, getStoryMediaUrl, getStoryDuration, defaultStoryDuration, showsReplyInput, showsOptionsIcon, showsLikeIcon, showsShareIcon, onReplySubmit, onLikePress, onSharePress, onOptionsPress, headerStyle, usernameStyle, timestampStyle, footerStyle, replyInputStyle, progressBarTrackStyle, progressBarFillStyle, renderHeader, renderFooter, renderCaption, }: StoryViewerProps<U, S>): React.JSX.Element | null;

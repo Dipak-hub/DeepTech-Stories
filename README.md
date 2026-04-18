@@ -1,50 +1,155 @@
-# Welcome to your Expo app 👋
+# React Native Insta Story Viewer
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A highly customizable, production-ready, Instagram-like 3D cube story viewer for React Native and Expo. 
 
-## Get started
+It handles complex 3D cube transitions, gestures, network loading states, and is fully typed with Generics so you can drop in your own data structures without mapping!
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 📸 Demo
 
-2. Start the app
+*(Add your demo GIFs and screenshots here)*
 
-   ```bash
-   npx expo start
-   ```
+<div style="display: flex; gap: 10px;">
+  <img src="https://via.placeholder.com/250x500.png?text=Story+Tray+Preview" alt="Story Tray Demo" width="200" />
+  <img src="https://via.placeholder.com/250x500.png?text=Story+Viewer+Preview" alt="Story Viewer Demo" width="200" />
+  <img src="https://via.placeholder.com/250x500.png?text=Custom+Header/Footer" alt="Customization Demo" width="200" />
+</div>
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🚀 Installation
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+This package relies on a few peer dependencies (Reanimated, Gesture Handler) that you likely already have installed.
 
-## Get a fresh project
-
-When you're ready, run:
-
+**1. Install the package:**
 ```bash
-npm run reset-project
+npm install react-native-insta-story-viewer
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+**2. Install Peer Dependencies (if you don't have them):**
+```bash
+npx expo install react-native-reanimated react-native-gesture-handler react-native-safe-area-context expo-linear-gradient expo-haptics @expo/vector-icons
+```
+*(Make sure you configure `react-native-reanimated` in your `babel.config.js`!)*
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🛠️ Usage
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+The component uses **TypeScript Generics and Accessors** (just like `FlatList`). You pass your raw data array and tell the component how to extract the data it needs using functions like `getUserId`.
 
-## Join the community
+### Basic Example
 
-Join our community of developers creating universal apps.
+```tsx
+import React from 'react';
+import { View } from 'react-native';
+import { StoryTray } from 'react-native-insta-story-viewer';
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+// Your raw API data!
+const myData = [
+  {
+    accountId: 'u1',
+    handle: 'john_doe',
+    profilePic: 'https://i.pravatar.cc/150?img=12',
+    feed: [
+      { id: 's1', image: 'https://images.unsplash.com/photo-1506905925346?w=800', ms: 5000 },
+      { id: 's2', image: 'https://images.unsplash.com/photo-1511884642898?w=800', ms: 4000 },
+    ],
+  }
+];
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, backgroundColor: '#fff', paddingTop: 50 }}>
+      <StoryTray
+        users={myData}
+        
+        // 1. Tell the component how to read your data:
+        getUserId={(u) => u.accountId}
+        getUserAvatarUrl={(u) => u.profilePic}
+        getUserName={(u) => u.handle}
+        getUserStories={(u) => u.feed}
+        
+        getStoryId={(s) => s.id}
+        getStoryMediaUrl={(s) => s.image}
+        getStoryDuration={(s) => s.ms}
+
+        // 2. Add some callbacks!
+        onLikePress={(user, story) => console.log('Liked!', user.handle)}
+        onReplySubmit={(user, story, text) => console.log('Reply:', text)}
+      />
+    </View>
+  );
+}
+```
+
+---
+
+## ⚙️ Props & Configuration
+
+### Data Accessors (Required)
+Because the component is Generic (`<U, S>`), you must provide these functions to extract data:
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `getUserId` | `(user: U) => string` | Returns the unique ID for the user. |
+| `getUserAvatarUrl` | `(user: U) => string` | Returns the profile picture URL. |
+| `getUserName` | `(user: U) => string` | Returns the display name. |
+| `getUserStories` | `(user: U) => S[]` | Returns the array of stories for the user. |
+| `getStoryId` | `(story: S) => string` | Returns the unique ID for the story. |
+| `getStoryMediaUrl` | `(story: S) => string` | Returns the image URL for the story. |
+
+### Optional Accessors
+| Prop | Type | Description |
+|------|------|-------------|
+| `getStoryDuration` | `(story: S) => number` | Story duration in ms. Falls back to `defaultStoryDuration`. |
+
+### UI Configuration Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `defaultStoryDuration` | `number` | `5000` | Default duration if story has none. |
+| `unviewedRingColors` | `string[]` | `['#f09433', ...]` | Instagram-style gradient colors for the Avatar Ring. |
+| `viewedRingColor` | `string` | `'#E0E0E0'` | Ring color when all stories are viewed. |
+| `showsReplyInput` | `boolean` | `true` | Show/Hide the bottom reply text input. |
+| `showsOptionsIcon` | `boolean` | `true` | Show/Hide the top right `⋮` menu icon. |
+| `showsLikeIcon` | `boolean` | `true` | Show/Hide the bottom heart icon. |
+| `showsShareIcon` | `boolean` | `true` | Show/Hide the bottom paper plane icon. |
+
+### Callbacks (with Auto-Haptics 📳)
+| Prop | Type | Description |
+|------|------|-------------|
+| `onReplySubmit` | `(user, story, text) => void` | Fired when the user submits a message in the input field. |
+| `onLikePress` | `(user, story) => void` | Fired when the heart icon is tapped. |
+| `onSharePress` | `(user, story) => void` | Fired when the share icon is tapped. |
+| `onOptionsPress` | `(user, story) => void` | Fired when the `⋮` icon is tapped. |
+| `onAllStoriesViewed` | `(userId: string) => void` | Fired when the user watches the very last story in the queue. |
+
+---
+
+## 🎨 Advanced Customization
+
+You can inject styles to heavily customize the built-in layout:
+
+```tsx
+<StoryTray
+  // ...
+  usernameStyle={{ color: '#FFE0B2', fontSize: 16 }}
+  progressBarFillStyle={{ backgroundColor: '#FF9800' }}
+  replyInputStyle={{ borderColor: 'red' }}
+/>
+```
+
+### Complete Render Overrides
+If you need complete control, bypass our UI entirely using Render Props:
+*   `renderAvatar`: Replace the circular tray avatars entirely.
+*   `renderHeader`: Replace the top user info bar inside the viewer.
+*   `renderFooter`: Replace the bottom interaction bar inside the viewer.
+
+---
+
+## Contributing
+Pull requests are welcome!
+
+## License
+MIT
