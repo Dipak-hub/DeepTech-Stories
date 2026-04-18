@@ -8,7 +8,9 @@ It handles complex 3D cube transitions, gestures, network loading states, and is
 
 ## 📸 Demo
 
-### [▶️ Click here to watch the Video Demo!](https://drive.google.com/file/d/10CYhIMnRuh9ZJIFlowcf9JrUXqQrR_QZ/view)
+<div align="center">
+  <img src="https://drive.google.com/uc?export=view&id=10CYhIMnRuh9ZJIFlowcf9JrUXqQrR_QZ" alt="Story Viewer GIF Demo" width="300" />
+</div>
 
 <div align="center">
   <img src="https://drive.google.com/uc?export=view&id=1WqvTlQmDuW49mANXisAEU75_YcDuzl8r" alt="Story Viewer Demo" width="300" />
