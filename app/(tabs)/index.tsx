@@ -1,98 +1,154 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StoryTray } from '../../src/index';
+import { DefaultStoryUser } from '../../src/types';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const STORIES: DefaultStoryUser[] = [
+  {
+    id: 'u1',
+    username: 'dipak_k',
+    avatarUri: 'https://i.pravatar.cc/150?img=12',
+    stories: [
+      {
+        id: 's1a',
+        uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+        duration: 6000,
+        title: 'Mountain Vibes 🏔️',
+        caption: 'Nothing beats the sunrise from 4000m',
+      },
+      {
+        id: 's1b',
+        uri: 'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?w=800',
+        duration: 5000,
+        caption: 'The fog just adds to it 🌫️',
+      },
+    ],
+  },
+  {
+    id: 'u2',
+    username: 'anika.dev',
+    avatarUri: 'https://i.pravatar.cc/150?img=5',
+    stories: [
+      {
+        id: 's2a',
+        uri: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=800',
+        duration: 5000,
+        title: 'Golden hour ✨',
+      },
+      {
+        id: 's2b',
+        uri: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=800',
+        duration: 4000,
+      },
+    ],
+  },
+  {
+    id: 'u3',
+    username: 'rohan.tsx',
+    avatarUri: 'https://i.pravatar.cc/150?img=33',
+    stories: [
+      {
+        id: 's3a',
+        uri: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800',
+        caption: 'Weekend hike 🌿',
+      },
+      {
+        id: 's3b',
+        uri: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800',
+        caption: 'Made it to the top 🎉',
+      },
+    ],
+  },
+  {
+    id: 'u4',
+    username: 'megha.ui',
+    avatarUri: 'https://i.pravatar.cc/150?img=47',
+    stories: [
+      {
+        id: 's4a',
+        uri: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800',
+        duration: 7000,
+        title: 'Travel diary 🗺️',
+      },
+    ],
+  },
+  {
+    id: 'u5',
+    username: 'kiran.rn',
+    avatarUri: 'https://i.pravatar.cc/150?img=60',
+    stories: [
+      {
+        id: 's5a',
+        uri: 'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?w=800',
+        duration: 5000,
+        caption: 'Early morning 🌅',
+      },
+    ],
+  },
+];
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <View style={styles.screen}>
+          <Text style={styles.heading}>Stories</Text>
+          <View style={styles.divider} />
+          <StoryTray
+            users={STORIES}
+            viewedStoryIds={[]}
+            showsLikeIcon={true}
+            showsShareIcon={true}
+            showsReplyInput={true}
+            getUserId={(u) => u.id}
+            getUserAvatarUrl={(u) => u.avatarUri}
+            getUserName={(u) => u.username}
+            getUserStories={(u) => u.stories}
+            getStoryId={(s) => s.id}
+            getStoryMediaUrl={(s) => s.uri}
+            getStoryDuration={(s) => s.duration}
+            defaultStoryDuration={5000} // Custom fallback duration
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+            unviewedRingColors={['#f09433', '#e6683c', '#dc2743', '#cc2366', '#bc1888']}
+            viewedRingColor="#E0E0E0"
+            avatarSize={68}
+            onStoryView={(uid, sid) => console.log('viewed:', uid, sid)}
+            onAllStoriesViewed={(uid) => console.log('all done:', uid)}
+            
+            onLikePress={(u, s) => console.log('Liked:', u.username, s.id)}
+            onSharePress={(u, s) => console.log('Shared:', u.username, s.id)}
+            onOptionsPress={(u, s) => console.log('Options:', u.username, s.id)}
+            onReplySubmit={(u, s, text) => console.log('Reply sent to', u.username, ':', text)}
+            
+            // Example of granular style overrides
+            usernameStyle={{ color: '#FFE0B2', fontSize: 16 }}
+            progressBarFillStyle={{ backgroundColor: '#FF9800' }}
+          />
+          <View style={styles.divider} />
+        </View>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  screen: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingTop: 56,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  heading: {
+    fontSize: 22,
+    fontWeight: '700',
+    paddingHorizontal: 16,
+    marginBottom: 4,
+    color: '#111',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E0E0E0',
   },
 });
