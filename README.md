@@ -9,7 +9,7 @@ It handles complex 3D cube transitions, gestures, network loading states, and is
 ## 📸 Demo
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/Dipak-hub/DeepTech-Stories/master/assets/images/demo.gif" alt="Story Viewer GIF Demo" width="300" />
+  <img src="https://drive.google.com/uc?export=view&id=10CYhIMnRuh9ZJIFlowcf9JrUXqQrR_QZ" alt="Story Viewer GIF Demo" width="300" />
 </div>
 
 <div align="center">

@@ -27,43 +27,24 @@ import Animated, {
   SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Feather, Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import * as Haptics from 'expo-haptics';
-import { useVideoPlayer, VideoView } from 'expo-video';
-
 import { useStoryProgress } from '../hooks/useStoryProgress';
 import { StoryViewerProps, StoryMediaType, StoryAnimationType } from '../types';
 import { ProgressBar } from './ProgressBar';
+import { VideoWrapper, VideoLoadData } from './VideoWrapper';
+import { UnifiedLinearGradient } from './UnifiedLinearGradient';
+import { UnifiedIcon } from './UnifiedIcon';
+import { triggerHaptic, HapticImpactStyle } from '../utils/haptics';
 
 const { width: W, height: H } = Dimensions.get('window');
 const DEFAULT_DUR = 5000;
 
-function StoryVideo({ url, paused, onLoad }: { url: string; paused: boolean; onLoad: () => void }) {
-  const player = useVideoPlayer(url, p => {
-    p.loop = true;
-    p.play();
-  });
-  
-  useEffect(() => {
-    if (paused) player.pause();
-    else player.play();
-  }, [paused, player]);
-
-  // Fallback in case onFirstFrameRender doesn't fire quickly
-  useEffect(() => {
-    const t = setTimeout(onLoad, 600);
-    return () => clearTimeout(t);
-  }, [onLoad]);
-
+function StoryVideo({ url, paused, onLoad }: { url: string; paused: boolean; onLoad: (data?: VideoLoadData) => void }) {
   return (
-    <VideoView 
-      player={player} 
-      style={StyleSheet.absoluteFill} 
-      contentFit="cover" 
-      onFirstFrameRender={() => {
-        setTimeout(onLoad, 50);
-      }}
+    <VideoWrapper
+      url={url}
+      paused={paused}
+      onLoad={onLoad}
+      style={StyleSheet.absoluteFill}
     />
   );
 }
@@ -138,8 +119,8 @@ function AnimatedUserStory<U, S>({
           }}
         />
       )}
-      <LinearGradient colors={['rgba(0,0,0,0.6)', 'transparent']} style={styles.scrimTop} pointerEvents="none" />
-      <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.scrimBottom} pointerEvents="none" />
+      <UnifiedLinearGradient colors={['rgba(0,0,0,0.6)', 'transparent']} style={styles.scrimTop} pointerEvents="none" />
+      <UnifiedLinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.scrimBottom} pointerEvents="none" />
     </Animated.View>
   );
 }
@@ -372,25 +353,25 @@ export function StoryViewer<U, S>({
 
   const handleLike = useCallback(() => {
     if (!activeUser || !activeStory) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    triggerHaptic(HapticImpactStyle.Light);
     onLikePress?.(activeUser, activeStory);
   }, [activeUser, activeStory, onLikePress]);
 
   const handleShare = useCallback(() => {
     if (!activeUser || !activeStory) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    triggerHaptic(HapticImpactStyle.Light);
     onSharePress?.(activeUser, activeStory);
   }, [activeUser, activeStory, onSharePress]);
 
   const handleOptions = useCallback(() => {
     if (!activeUser || !activeStory) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    triggerHaptic(HapticImpactStyle.Light);
     onOptionsPress?.(activeUser, activeStory);
   }, [activeUser, activeStory, onOptionsPress]);
 
   const handleReplySubmit = useCallback(() => {
     if (!activeUser || !activeStory || !replyText.trim()) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    triggerHaptic(HapticImpactStyle.Light);
     onReplySubmit?.(activeUser, activeStory, replyText);
     setReplyText('');
     setPaused(false);
@@ -468,11 +449,11 @@ export function StoryViewer<U, S>({
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {showsOptionsIcon && (
                 <Pressable onPress={handleOptions} style={{ padding: 8, marginRight: 4 }}>
-                  <Ionicons name="ellipsis-vertical" size={20} color="#fff" />
+                  <UnifiedIcon family="Ionicons" name="ellipsis-vertical" size={20} color="#fff" />
                 </Pressable>
               )}
               <Pressable onPress={onClose} hitSlop={14} style={{ padding: 4 }}>
-                <Ionicons name="close" size={28} color="#fff" />
+                <UnifiedIcon family="Ionicons" name="close" size={28} color="#fff" />
               </Pressable>
             </View>
           </View>
@@ -503,7 +484,7 @@ export function StoryViewer<U, S>({
           ) : (
             <>
               <View style={styles.viewersWrap}>
-                <Feather name="eye" size={12} color="rgba(255,255,255,0.8)" />
+                <UnifiedIcon family="Feather" name="eye" size={12} color="rgba(255,255,255,0.8)" />
                 <Text style={styles.viewersText}>{userIndex * 13 + activeStoryIndex * 7 + 42}</Text>
               </View>
               
@@ -525,12 +506,12 @@ export function StoryViewer<U, S>({
                 )}
                 {showsLikeIcon && (
                   <Pressable onPress={handleLike} style={styles.iconBtn}>
-                    <Ionicons name="heart-outline" size={28} color="#fff" />
+                    <UnifiedIcon family="Ionicons" name="heart-outline" size={28} color="#fff" />
                   </Pressable>
                 )}
                 {showsShareIcon && (
                   <Pressable onPress={handleShare} style={styles.iconBtn}>
-                    <Feather name="send" size={24} color="#fff" />
+                    <UnifiedIcon family="Feather" name="send" size={24} color="#fff" />
                   </Pressable>
                 )}
               </View>
