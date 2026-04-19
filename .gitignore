@@ -41,3 +41,6 @@ app-example
 # generated native folders
 /ios
 /android
+
+# React Native CLI demo (local testing only)
+cli_demo/

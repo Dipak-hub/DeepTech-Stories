@@ -1,6 +1,6 @@
 # React Native Insta Story Viewer
 
-A highly customizable, production-ready, Instagram-like 3D cube story viewer for React Native and Expo. 
+A highly customizable, production-ready, Instagram-like 3D cube story viewer for React Native and Expo.
 
 It handles complex 3D cube transitions, gestures, network loading states, and is fully typed with Generics so you can drop in your own data structures without mapping!
 
@@ -20,33 +20,123 @@ It handles complex 3D cube transitions, gestures, network loading states, and is
 
 ## 🚀 Installation
 
-This package relies on a few peer dependencies (Reanimated, Gesture Handler) that you likely already have installed.
+### 1. Install the package
 
-**1. Install the package:**
 ```bash
 npm install deeptech-react-native-stories
 ```
 
-**2. Install Peer Dependencies (if you don't have them):**
+---
+
+### 🟣 Expo (Managed & Bare Workflow)
+
+Install all peer dependencies using the Expo CLI to ensure version compatibility:
+
 ```bash
-npx expo install react-native-reanimated react-native-gesture-handler react-native-safe-area-context expo-linear-gradient expo-haptics expo-video @expo/vector-icons
+npx expo install \
+  react-native-reanimated \
+  react-native-gesture-handler \
+  react-native-safe-area-context \
+  expo-linear-gradient \
+  expo-haptics \
+  expo-video \
+  @expo/vector-icons
 ```
-*(Make sure you configure `react-native-reanimated` in your `babel.config.js`!)*
+
+Then add the Reanimated Babel plugin to your `babel.config.js`:
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: ['react-native-reanimated/plugin'],
+  };
+};
+```
+
+> **Note:** `expo-video`, `expo-linear-gradient`, `expo-haptics`, and `@expo/vector-icons` are Expo-specific packages used internally by the library when running in an Expo environment.
+
+---
+
+### 🟢 React Native CLI (Bare / Pure RN)
+
+Install peer dependencies using npm. The library uses React Native-native equivalents automatically (no Expo packages required):
+
+```bash
+npm install \
+  react-native-reanimated@3.16.7 \
+  react-native-gesture-handler@2.22.1 \
+  react-native-safe-area-context \
+  react-native-linear-gradient \
+  react-native-haptic-feedback \
+  react-native-video \
+  react-native-vector-icons
+```
+
+> **Important version constraints for React Native 0.76.x:**
+> - `react-native-reanimated@3.16.7` (Reanimated 4.x requires RN 0.77+)
+> - `react-native-gesture-handler@2.22.1` (2.20.x lacks Fabric APIs; 2.31.x targets RN 0.77+)
+
+Then configure `babel.config.js`:
+
+```js
+module.exports = {
+  presets: ['module:@react-native/babel-preset'],
+  plugins: ['react-native-reanimated/plugin'],
+};
+```
+
+Then link native dependencies (for RN 0.60+ auto-linking handles most, but `react-native-vector-icons` may need manual setup):
+
+```bash
+# Android: add to android/app/build.gradle
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+```
 
 ---
 
 ## 🛠️ Usage
 
-The component uses **TypeScript Generics and Accessors** (just like `FlatList`). You pass your raw data array and tell the component how to extract the data it needs using functions like `getUserId`.
+Wrap your root component with `SafeAreaProvider` and `GestureHandlerRootView` — both Expo and CLI require this:
 
-### Basic Example
+```tsx
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StoryTray } from 'deeptech-react-native-stories';
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StoryTray
+          users={myData}
+          getUserId={(u) => u.accountId}
+          getUserAvatarUrl={(u) => u.profilePic}
+          getUserName={(u) => u.handle}
+          getUserStories={(u) => u.feed}
+          getStoryId={(s) => s.id}
+          getStoryMediaUrl={(s) => s.image}
+          getStoryDuration={(s) => s.ms}
+        />
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
+  );
+}
+```
+
+The component uses **TypeScript Generics and Accessors** (just like `FlatList`). You pass your raw data array and tell the component how to extract the data it needs using accessor functions — no data mapping required!
+
+### Basic Example (with raw API data)
 
 ```tsx
 import React from 'react';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StoryTray } from 'deeptech-react-native-stories';
 
-// Your raw API data!
+// Your raw API data — no transformation needed!
 const myData = [
   {
     accountId: 'u1',
@@ -61,25 +151,29 @@ const myData = [
 
 export default function App() {
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff', paddingTop: 50 }}>
-      <StoryTray
-        users={myData}
-        
-        // 1. Tell the component how to read your data:
-        getUserId={(u) => u.accountId}
-        getUserAvatarUrl={(u) => u.profilePic}
-        getUserName={(u) => u.handle}
-        getUserStories={(u) => u.feed}
-        
-        getStoryId={(s) => s.id}
-        getStoryMediaUrl={(s) => s.image}
-        getStoryDuration={(s) => s.ms}
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: '#fff', paddingTop: 50 }}>
+          <StoryTray
+            users={myData}
 
-        // 2. Add some callbacks!
-        onLikePress={(user, story) => console.log('Liked!', user.handle)}
-        onReplySubmit={(user, story, text) => console.log('Reply:', text)}
-      />
-    </View>
+            // Tell the component how to read your data:
+            getUserId={(u) => u.accountId}
+            getUserAvatarUrl={(u) => u.profilePic}
+            getUserName={(u) => u.handle}
+            getUserStories={(u) => u.feed}
+
+            getStoryId={(s) => s.id}
+            getStoryMediaUrl={(s) => s.image}
+            getStoryDuration={(s) => s.ms}
+
+            // Add callbacks:
+            onLikePress={(user, story) => console.log('Liked!', user.handle)}
+            onReplySubmit={(user, story, text) => console.log('Reply:', text)}
+          />
+        </View>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 ```
