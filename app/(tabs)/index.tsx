@@ -3,8 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StoryTray } from '../../src/index';
-import { DefaultStoryUser } from '../../src/types';
+import { StoryTray, DefaultStoryUser } from 'deeptech-react-native-stories';
 
 const STORIES: DefaultStoryUser[] = [
   {
