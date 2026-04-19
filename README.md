@@ -24,12 +24,12 @@ This package relies on a few peer dependencies (Reanimated, Gesture Handler) tha
 
 **1. Install the package:**
 ```bash
-npm install react-native-insta-story-viewer
+npm install deeptech-react-native-stories
 ```
 
 **2. Install Peer Dependencies (if you don't have them):**
 ```bash
-npx expo install react-native-reanimated react-native-gesture-handler react-native-safe-area-context expo-linear-gradient expo-haptics @expo/vector-icons
+npx expo install react-native-reanimated react-native-gesture-handler react-native-safe-area-context expo-linear-gradient expo-haptics expo-video @expo/vector-icons
 ```
 *(Make sure you configure `react-native-reanimated` in your `babel.config.js`!)*
 
@@ -44,7 +44,7 @@ The component uses **TypeScript Generics and Accessors** (just like `FlatList`).
 ```tsx
 import React from 'react';
 import { View } from 'react-native';
-import { StoryTray } from 'react-native-insta-story-viewer';
+import { StoryTray } from 'deeptech-react-native-stories';
 
 // Your raw API data!
 const myData = [
@@ -98,17 +98,20 @@ Because the component is Generic (`<U, S>`), you must provide these functions to
 | `getUserName` | `(user: U) => string` | Returns the display name. |
 | `getUserStories` | `(user: U) => S[]` | Returns the array of stories for the user. |
 | `getStoryId` | `(story: S) => string` | Returns the unique ID for the story. |
-| `getStoryMediaUrl` | `(story: S) => string` | Returns the image URL for the story. |
+| `getStoryMediaUrl` | `(story: S) => string` | Returns the image/video URL for the story. |
 
 ### Optional Accessors
 | Prop | Type | Description |
 |------|------|-------------|
 | `getStoryDuration` | `(story: S) => number` | Story duration in ms. Falls back to `defaultStoryDuration`. |
+| `getStoryMediaType` | `(story: S) => 'image' \| 'video'` | Tells the viewer if it should render an image or play a video. |
 
 ### UI Configuration Props
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
+| `animationType` | `'cube' \| 'slide'` | `'cube'` | The transition animation style between different users. |
 | `defaultStoryDuration` | `number` | `5000` | Default duration if story has none. |
+| `maxVideoDuration` | `number` | `30000` | Maximum cap (in ms) for video stories before progressing. |
 | `unviewedRingColors` | `string[]` | `['#f09433', ...]` | Instagram-style gradient colors for the Avatar Ring. |
 | `viewedRingColor` | `string` | `'#E0E0E0'` | Ring color when all stories are viewed. |
 | `showsReplyInput` | `boolean` | `true` | Show/Hide the bottom reply text input. |
