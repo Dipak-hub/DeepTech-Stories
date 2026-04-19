@@ -1,7 +1,7 @@
 {
   "name": "deeptech-react-native-stories",
   "version": "1.2.0",
-  "description": "A highly customizable, Instagram-like 3D cube story viewer for React Native and Expo.",
+  "description": "Instagram-like story UI component for React Native. Features include horizontal story tray, 3D cube animation, stories viewer with progress bar, camera, video support, liking, replying, sharing, and swipe gestures.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -10,13 +10,18 @@
   },
   "keywords": [
     "react-native",
-    "expo",
     "stories",
-    "instagram",
-    "viewer",
-    "cube",
-    "3d",
-    "gesture"
+    "instagram-stories",
+    "whatsapp-stories",
+    "story",
+    "react-native-stories",
+    "status",
+    "social",
+    "deeptech",
+    "animated",
+    "typescript",
+    "ios",
+    "android"
   ],
   "author": "Dipak",
   "license": "MIT",
