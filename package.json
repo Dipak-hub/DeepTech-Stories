@@ -1,6 +1,6 @@
 {
   "name": "deeptech-react-native-stories",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Instagram-like story UI component for React Native. Features include horizontal story tray, 3D cube animation, stories viewer with progress bar, camera, video support, liking, replying, sharing, and swipe gestures.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -43,5 +43,9 @@
   "devDependencies": {
     "@types/react": "~19.1.0",
     "typescript": "~5.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dipak-hub/DeepTech-Stories.git"
   }
 }
