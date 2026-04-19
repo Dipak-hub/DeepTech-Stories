@@ -3,6 +3,8 @@ import { StyleProp, ViewStyle, TextStyle } from 'react-native';
 
 export type StoryMediaType = 'image' | 'video';
 
+export type StoryAnimationType = 'cube' | 'slide';
+
 export interface StoryViewerCallbacks {
   onStoryOpen?: (userId: string) => void;
   onStoryView?: (userId: string, storyId: string) => void;
@@ -29,6 +31,9 @@ export interface StoryViewerProps<U, S> extends StoryViewerCallbacks, StoryAcces
   viewedStoryIds?: string[];
   onMarkViewed?: (storyId: string) => void;
   defaultStoryDuration?: number;
+  maxVideoDuration?: number;
+
+  animationType?: StoryAnimationType;
 
   showsReplyInput?: boolean;
   showsOptionsIcon?: boolean;
@@ -65,6 +70,9 @@ export interface StoryTrayProps<U, S> extends StoryViewerCallbacks, StoryAccesso
   trayBackgroundColor?: string;
   renderAvatar?: (props: { user: U; isViewed: boolean; onPress: (user: U) => void }) => ReactNode;
   defaultStoryDuration?: number;
+  maxVideoDuration?: number;
+
+  animationType?: StoryAnimationType;
 
   showsReplyInput?: boolean;
   showsOptionsIcon?: boolean;
