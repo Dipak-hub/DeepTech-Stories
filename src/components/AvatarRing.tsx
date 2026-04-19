@@ -6,7 +6,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
+import { UnifiedLinearGradient } from './UnifiedLinearGradient';
 import { StoryAccessors } from '../types';
 
 interface Props<U, S> extends Pick<StoryAccessors<U, S>, 'getUserAvatarUrl' | 'getUserName'> {
@@ -75,7 +75,7 @@ export function AvatarRing<U, S>({
             }}
           />
         ) : (
-          <LinearGradient
+          <UnifiedLinearGradient
             colors={unviewedColors}
             start={{ x: 0.1, y: 0.9 }}
             end={{ x: 0.9, y: 0.1 }}
