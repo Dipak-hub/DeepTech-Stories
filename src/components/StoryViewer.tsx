@@ -23,28 +23,62 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
+  withSpring,
   SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { useVideoPlayer, VideoView } from 'expo-video';
 
 import { useStoryProgress } from '../hooks/useStoryProgress';
-import { StoryViewerProps } from '../types';
+import { StoryViewerProps, StoryMediaType, StoryAnimationType } from '../types';
 import { ProgressBar } from './ProgressBar';
 
 const { width: W, height: H } = Dimensions.get('window');
 const DEFAULT_DUR = 5000;
 
-function CubeUser<U, S>({
+function StoryVideo({ url, paused, onLoad }: { url: string; paused: boolean; onLoad: () => void }) {
+  const player = useVideoPlayer(url, p => {
+    p.loop = true;
+    p.play();
+  });
+  
+  useEffect(() => {
+    if (paused) player.pause();
+    else player.play();
+  }, [paused, player]);
+
+  // Fallback in case onFirstFrameRender doesn't fire quickly
+  useEffect(() => {
+    const t = setTimeout(onLoad, 600);
+    return () => clearTimeout(t);
+  }, [onLoad]);
+
+  return (
+    <VideoView 
+      player={player} 
+      style={StyleSheet.absoluteFill} 
+      contentFit="cover" 
+      onFirstFrameRender={() => {
+        setTimeout(onLoad, 50);
+      }}
+    />
+  );
+}
+
+function AnimatedUserStory<U, S>({
   user,
   storyIndex,
   i,
   scrollX,
   getUserStories,
   getStoryMediaUrl,
+  getStoryMediaType,
   onLoad,
+  animationType,
+  paused,
 }: {
   user: U;
   storyIndex: number;
@@ -52,13 +86,23 @@ function CubeUser<U, S>({
   scrollX: SharedValue<number>;
   getUserStories: (user: U) => S[];
   getStoryMediaUrl: (story: S) => string;
+  getStoryMediaType?: (story: S) => StoryMediaType | undefined;
   onLoad: () => void;
+  animationType: StoryAnimationType;
+  paused: boolean;
 }) {
   const animatedStyle = useAnimatedStyle(() => {
     const offset = scrollX.value - i * W;
     const opacity = Math.abs(offset) >= W ? 0 : 1;
-    const rotateY = interpolate(offset, [-W, 0, W], [90, 0, -90], Extrapolation.CLAMP);
 
+    if (animationType === 'slide') {
+      return {
+        opacity,
+        transform: [{ translateX: -offset }],
+      };
+    }
+
+    const rotateY = interpolate(offset, [-W, 0, W], [90, 0, -90], Extrapolation.CLAMP);
     const isNext = offset < 0;
     const pivotX = isNext ? -W / 2 : W / 2;
 
@@ -78,17 +122,22 @@ function CubeUser<U, S>({
   const story = stories[storyIndex];
   if (!story) return null;
 
+  const isVideo = getStoryMediaType?.(story) === 'video';
+
   return (
     <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]} pointerEvents="none">
-      <Image 
-        source={{ uri: getStoryMediaUrl(story) }} 
-        style={StyleSheet.absoluteFill} 
-        resizeMode="cover" 
-        onLoad={() => {
-          // Add slight delay to ensure render is fully complete before starting progress
-          setTimeout(onLoad, 50);
-        }}
-      />
+      {isVideo ? (
+        <StoryVideo url={getStoryMediaUrl(story)} paused={paused} onLoad={onLoad} />
+      ) : (
+        <Image 
+          source={{ uri: getStoryMediaUrl(story) }} 
+          style={StyleSheet.absoluteFill} 
+          resizeMode="cover" 
+          onLoad={() => {
+            setTimeout(onLoad, 50);
+          }}
+        />
+      )}
       <LinearGradient colors={['rgba(0,0,0,0.6)', 'transparent']} style={styles.scrimTop} pointerEvents="none" />
       <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.scrimBottom} pointerEvents="none" />
     </Animated.View>
@@ -113,8 +162,11 @@ export function StoryViewer<U, S>({
   getUserStories,
   getStoryId,
   getStoryMediaUrl,
+  getStoryMediaType,
   getStoryDuration,
   defaultStoryDuration = 5000,
+  maxVideoDuration = 30000,
+  animationType = 'cube',
   
   showsReplyInput = true,
   showsOptionsIcon = true,
@@ -164,7 +216,11 @@ export function StoryViewer<U, S>({
   const activeUserStories = activeUser ? getUserStories(activeUser) : [];
   const activeStoryIndex = activeUserId ? (storyIndices[activeUserId] || 0) : 0;
   const activeStory = activeUserStories[activeStoryIndex];
-  const duration = activeStory ? (getStoryDuration?.(activeStory) ?? defaultStoryDuration) : defaultStoryDuration;
+  
+  let duration = activeStory ? (getStoryDuration?.(activeStory) ?? defaultStoryDuration) : defaultStoryDuration;
+  if (activeStory && getStoryMediaType?.(activeStory) === 'video') {
+    duration = Math.min(duration, maxVideoDuration);
+  }
 
   const updateStoryIndex = useCallback((uid: string, newIdx: number) => {
     setStoryIndices(prev => ({ ...prev, [uid]: newIdx }));
@@ -261,11 +317,25 @@ export function StoryViewer<U, S>({
       isPanning.value = false;
       runOnJS(setPaused)(false);
       
-      const targetScrollX = userIndex * W - e.translationX - e.velocityX * 0.2;
-      let nextIdx = Math.round(targetScrollX / W);
+      const projectedX = e.translationX + e.velocityX * 0.2;
+      let nextIdx = userIndex;
+      
+      if (projectedX < -W / 4) {
+        // Swiping left (next user)
+        nextIdx = userIndex + 1;
+      } else if (projectedX > W / 4) {
+        // Swiping right (previous user)
+        nextIdx = userIndex - 1;
+      }
+
       nextIdx = Math.max(0, Math.min(users.length - 1, nextIdx));
 
-      scrollX.value = withTiming(nextIdx * W, { duration: 300 });
+      // Use a custom spring config for a quick, native-feeling snap
+      scrollX.value = withSpring(nextIdx * W, {
+        damping: 20,
+        stiffness: 250,
+        mass: 0.8,
+      });
       
       if (nextIdx !== userIndex) {
         runOnJS(setIsMediaLoaded)(false);
@@ -341,7 +411,7 @@ export function StoryViewer<U, S>({
         <GestureDetector gesture={gesture}>
           <View style={StyleSheet.absoluteFill}>
             {users.map((u, i) => (
-              <CubeUser<U, S>
+              <AnimatedUserStory<U, S>
                 key={getUserId(u)} 
                 user={u} 
                 storyIndex={storyIndices[getUserId(u)] || 0} 
@@ -349,6 +419,9 @@ export function StoryViewer<U, S>({
                 scrollX={scrollX} 
                 getUserStories={getUserStories}
                 getStoryMediaUrl={getStoryMediaUrl}
+                getStoryMediaType={getStoryMediaType}
+                animationType={animationType}
+                paused={paused || i !== userIndex}
                 onLoad={() => {
                   if (i === userIndex) {
                     setIsMediaLoaded(true);

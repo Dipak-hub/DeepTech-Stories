@@ -21,9 +21,10 @@ const STORIES: DefaultStoryUser[] = [
       },
       {
         id: 's1b',
-        uri: 'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?w=800',
-        duration: 5000,
-        caption: 'The fog just adds to it 🌫️',
+        uri: 'https://res.cloudinary.com/demo/video/upload/dog.mp4',
+        duration: 15000,
+        caption: 'Awesome video! 🎬',
+        mediaType: 'video',
       },
     ],
   },
@@ -34,9 +35,10 @@ const STORIES: DefaultStoryUser[] = [
     stories: [
       {
         id: 's2a',
-        uri: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=800',
+        uri: 'https://res.cloudinary.com/demo/video/upload/cld-sample-video.mp4',
         duration: 5000,
         title: 'Golden hour ✨',
+        mediaType: 'video',
       },
       {
         id: 's2b',
@@ -109,20 +111,22 @@ export default function HomeScreen() {
             getUserStories={(u) => u.stories}
             getStoryId={(s) => s.id}
             getStoryMediaUrl={(s) => s.uri}
+            getStoryMediaType={(s) => s.mediaType}
             getStoryDuration={(s) => s.duration}
             defaultStoryDuration={5000} // Custom fallback duration
+            animationType="slide"
 
             unviewedRingColors={['#f09433', '#e6683c', '#dc2743', '#cc2366', '#bc1888']}
             viewedRingColor="#E0E0E0"
             avatarSize={68}
             onStoryView={(uid, sid) => console.log('viewed:', uid, sid)}
             onAllStoriesViewed={(uid) => console.log('all done:', uid)}
-            
+
             onLikePress={(u, s) => console.log('Liked:', u.username, s.id)}
             onSharePress={(u, s) => console.log('Shared:', u.username, s.id)}
             onOptionsPress={(u, s) => console.log('Options:', u.username, s.id)}
             onReplySubmit={(u, s, text) => console.log('Reply sent to', u.username, ':', text)}
-            
+
             // Example of granular style overrides
             usernameStyle={{ color: '#FFE0B2', fontSize: 16 }}
             progressBarFillStyle={{ backgroundColor: '#FF9800' }}
