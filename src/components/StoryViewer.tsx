@@ -30,40 +30,22 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { useVideoPlayer, VideoView } from 'expo-video';
 
 import { useStoryProgress } from '../hooks/useStoryProgress';
 import { StoryViewerProps, StoryMediaType, StoryAnimationType } from '../types';
 import { ProgressBar } from './ProgressBar';
+import { VideoWrapper, VideoLoadData } from './VideoWrapper';
 
 const { width: W, height: H } = Dimensions.get('window');
 const DEFAULT_DUR = 5000;
 
-function StoryVideo({ url, paused, onLoad }: { url: string; paused: boolean; onLoad: () => void }) {
-  const player = useVideoPlayer(url, p => {
-    p.loop = true;
-    p.play();
-  });
-  
-  useEffect(() => {
-    if (paused) player.pause();
-    else player.play();
-  }, [paused, player]);
-
-  // Fallback in case onFirstFrameRender doesn't fire quickly
-  useEffect(() => {
-    const t = setTimeout(onLoad, 600);
-    return () => clearTimeout(t);
-  }, [onLoad]);
-
+function StoryVideo({ url, paused, onLoad }: { url: string; paused: boolean; onLoad: (data?: VideoLoadData) => void }) {
   return (
-    <VideoView 
-      player={player} 
-      style={StyleSheet.absoluteFill} 
-      contentFit="cover" 
-      onFirstFrameRender={() => {
-        setTimeout(onLoad, 50);
-      }}
+    <VideoWrapper
+      url={url}
+      paused={paused}
+      onLoad={onLoad}
+      style={StyleSheet.absoluteFill}
     />
   );
 }
